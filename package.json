@@ -1,0 +1,78 @@
+{
+  "name": "favourite-themes",
+  "displayName": "favourite-themes",
+  "description": "Mark your precious themes as favourites and find them quickly",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.86.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "favourite-themes",
+          "title": "Favourite Themes",
+          "icon": "media/favourites.svg"
+        }
+      ]
+    },
+    "views": {
+      "favourite-themes": [
+        {
+          "id": "bookmarks",
+          "name": "Bookmarks",
+          "icon": "media/favourites.svg",
+          "contextualTitle": "Favourite Themes"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "bookmarks",
+        "contents": "You currently have no favourited themes"
+      }
+    ],
+    "commands": [
+      {
+        "command": "favourite-themes.selectTheme",
+        "title": "Favourite Themes | Select Theme"
+      },
+      {
+        "command": "favourite-themes.addCurrentTheme",
+        "title": "Favourite Themes | Current Theme"
+      },
+      {
+        "command": "favourite-themes.addTheme",
+        "title": "Favourite Themes | Add Theme"
+      },
+      {
+        "command": "favourite-themes.removeTheme",
+        "title": "Favourite Themes | Remove Theme"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run compile && yarn run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.86.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.9",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  }
+}
