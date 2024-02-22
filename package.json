@@ -4,6 +4,7 @@
   "description": "Mark your precious themes as favourites and find them quickly",
   "publisher": "ItzaMi",
   "version": "0.0.1",
+  "icon": "media/thumbnail.png",
   "engines": {
     "vscode": "^1.86.0"
   },
