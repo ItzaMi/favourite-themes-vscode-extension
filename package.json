@@ -1,7 +1,8 @@
 {
-  "name": "favourite-themes",
-  "displayName": "favourite-themes",
+  "name": "your-favourite-themes",
+  "displayName": "Your Favourite Themes",
   "description": "Mark your precious themes as favourites and find them quickly",
+  "publisher": "ItzaMi",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.86.0"
@@ -9,6 +10,10 @@
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ItzaMi/favourite-themes-vscode-extension"
+  },
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
