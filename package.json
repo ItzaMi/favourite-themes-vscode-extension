@@ -3,7 +3,7 @@
   "displayName": "Your Favourite Themes",
   "description": "Mark your precious themes as favourites and find them quickly",
   "publisher": "ItzaMi",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "icon": "media/thumbnail.png",
   "engines": {
     "vscode": "^1.86.0"
