@@ -36,81 +36,131 @@ class ThemeProvider implements vscode.TreeDataProvider<string> {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  let disposable = vscode.commands.registerCommand(
+  const selectThemeCommand = vscode.commands.registerCommand(
     "favourite-themes.selectTheme",
-    async (theme: string) => {
-      await vscode.workspace
-        .getConfiguration()
-        .update("workbench.colorTheme", theme, true);
-      vscode.window.showInformationMessage(`Theme changed to ${theme}`);
+    async (theme?: string) => {
+      try {
+        if (!theme) {
+          const favouriteThemes = context.globalState.get<string[]>(
+            "favouriteThemes",
+            []
+          );
+          theme = await vscode.window.showQuickPick(favouriteThemes, {
+            placeHolder: "Select a theme to apply",
+          });
+          if (!theme) {
+            vscode.window.showErrorMessage("No theme selected.");
+            return;
+          }
+        }
+        await vscode.workspace
+          .getConfiguration()
+          .update("workbench.colorTheme", theme, true);
+        vscode.window.showInformationMessage(`Theme changed to ${theme}`);
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        vscode.window.showErrorMessage(
+          `Failed to change theme: ${errorMessage}`
+        );
+      }
     }
   );
 
-  context.subscriptions.push(disposable);
+  context.subscriptions.push(selectThemeCommand);
 
   const treeDataProvider = new ThemeProvider(context);
   vscode.window.registerTreeDataProvider("bookmarks", treeDataProvider);
 
-  disposable = vscode.commands.registerCommand(
+  const addThemeCommand = vscode.commands.registerCommand(
     "favourite-themes.addTheme",
     async () => {
-      const theme = await vscode.window.showInputBox({
-        prompt: "Enter the name of the theme",
-      });
-      if (theme) {
+      try {
+        const theme = await vscode.window.showInputBox({
+          prompt: "Enter the name of the theme",
+        });
+        if (theme) {
+          const favouriteThemes = context.globalState.get<string[]>(
+            "favouriteThemes",
+            []
+          );
+          favouriteThemes.push(theme);
+          await context.globalState.update("favouriteThemes", favouriteThemes);
+          treeDataProvider.refresh();
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        vscode.window.showErrorMessage(`Failed to add theme: ${errorMessage}`);
+      }
+    }
+  );
+
+  context.subscriptions.push(addThemeCommand);
+
+  const removeThemeCommand = vscode.commands.registerCommand(
+    "favourite-themes.removeTheme",
+    async () => {
+      try {
         const favouriteThemes = context.globalState.get<string[]>(
           "favouriteThemes",
           []
         );
-        favouriteThemes.push(theme);
-        await context.globalState.update("favouriteThemes", favouriteThemes);
-        treeDataProvider.refresh();
+        const theme = await vscode.window.showQuickPick(favouriteThemes, {
+          placeHolder: "Select a theme to remove",
+        });
+        if (theme) {
+          const index = favouriteThemes.indexOf(theme);
+          if (index > -1) {
+            favouriteThemes.splice(index, 1);
+            await context.globalState.update(
+              "favouriteThemes",
+              favouriteThemes
+            );
+            treeDataProvider.refresh();
+          }
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        vscode.window.showErrorMessage(
+          `Failed to remove theme: ${errorMessage}`
+        );
       }
     }
   );
 
-  context.subscriptions.push(disposable);
+  context.subscriptions.push(removeThemeCommand);
 
-  disposable = vscode.commands.registerCommand(
-    "favourite-themes.removeTheme",
+  const addCurrentThemeCommand = vscode.commands.registerCommand(
+    "favourite-themes.addCurrentTheme",
     async () => {
-      const favouriteThemes = context.globalState.get<string[]>(
-        "favouriteThemes",
-        []
-      );
-      const theme = await vscode.window.showQuickPick(favouriteThemes, {
-        placeHolder: "Select a theme to remove",
-      });
-      if (theme) {
-        const index = favouriteThemes.indexOf(theme);
-        if (index > -1) {
-          favouriteThemes.splice(index, 1);
+      try {
+        const currentTheme = vscode.workspace
+          .getConfiguration()
+          .get<string>("workbench.colorTheme");
+        vscode.window.showInformationMessage(
+          `Current theme is ${currentTheme}`
+        );
+        const favouriteThemes = context.globalState.get<string[]>(
+          "favouriteThemes",
+          []
+        );
+
+        if (currentTheme && !favouriteThemes.includes(currentTheme)) {
+          favouriteThemes.push(currentTheme);
           await context.globalState.update("favouriteThemes", favouriteThemes);
           treeDataProvider.refresh();
         }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        vscode.window.showErrorMessage(
+          `Failed to add current theme: ${errorMessage}`
+        );
       }
     }
   );
 
-  context.subscriptions.push(disposable);
-
-  disposable = vscode.commands.registerCommand(
-    "favourite-themes.addCurrentTheme",
-    () => {
-      const currentTheme = vscode.workspace
-        .getConfiguration()
-        .get("workbench.colorTheme");
-      vscode.window.showInformationMessage(`Current theme is ${currentTheme}`);
-      const favouriteThemes = context.globalState.get<string[]>(
-        "favouriteThemes",
-        []
-      );
-
-      if (currentTheme && !favouriteThemes.includes(currentTheme as string)) {
-        favouriteThemes.push(currentTheme as string);
-        context.globalState.update("favouriteThemes", favouriteThemes);
-        treeDataProvider.refresh();
-      }
-    }
-  );
+  context.subscriptions.push(addCurrentThemeCommand);
 }
