@@ -2,6 +2,10 @@
 
 It's easy to lose track of your most brilliant themes so here's the tool to bookmark all of them!
 
+## Install
+
+This is a VSCode extension so visit [this link](https://marketplace.visualstudio.com/items?itemName=ItzaMi.your-favourite-themes) or search for `Favourite Themes` in the marketplace to find it.
+
 ## Features
 
 You're able to:
